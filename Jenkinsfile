@@ -9,12 +9,19 @@ pipeline{
                git url: "https://github.com/Ashi1314/two-tier-flask-app.git", branch:"master" 
             }
         }
+        
+        stage("Trivy file system scan"){
+            steps{
+                sh "trivy fs . -o result.json"
+            }
+        }
         stage("Build"){
             steps{
                 sh "docker build -t two-tier-flask-app ."
             }
             
         }
+      
         stage("Test"){
             steps{
                 echo "Developer / Tester tests likh ke dega..."
@@ -30,7 +37,7 @@ pipeline{
                 )]){
 
                  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                 sh "docker image tag two-tier-flaskapp ${env.dockerHubUser}/two-tier-flask-app"
+                 sh "docker image tag two-tier-flask-app ${env.dockerHubUser}/two-tier-flask-app"
                  sh "docker push ${env.dockerHubUser}/two-tier-flask-app:latest"
                 }
             }
